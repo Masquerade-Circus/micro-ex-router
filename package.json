@@ -1,0 +1,27 @@
+{
+  "name": "micro-ex-router",
+  "version": "0.0.0",
+  "description": "Express like router for micro",
+  "main": "index.js",
+  "repository": "https://github.com/Masquerade-Circus/micro-ex-router.git",
+  "keywords": [
+    "micro",
+    "router",
+    "express",
+    "middleware",
+    "micro-service"
+  ],
+  "author": {
+    "name": "Masquerade Circus",
+    "email": "christian@masquerade-circus.net",
+    "url": "http://masquerade-circus.net"
+  },
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Masquerade-Circus/micro-ex-router/issues"
+  },
+  "homepage": "https://github.com/Masquerade-Circus/micro-ex-router#readme",
+  "jscsConfig": {
+    "preset": "crockford"
+  },
+}
