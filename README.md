@@ -54,8 +54,18 @@ server.listen(3000, () => console.log('Micro listening on port 3000'));
 - [X] Parametrized routes.
 - [X] "Use" middlewares.
 - [X] Arrays of middlewares.
-- [] Mix single middlewares and array of middlewares.
-- [] Use of subrouters.
+- [ ] Mix single middlewares and array of middlewares.
+- [ ] Use of subrouters.
+
+## Available methods
+
+- Get
+- Post
+- Put
+- Patch
+- Delete
+- Head
+- Options
 
 ## Legal
 
