@@ -4,6 +4,9 @@
   "description": "Express like router for micro",
   "main": "index.js",
   "repository": "https://github.com/Masquerade-Circus/micro-ex-router.git",
+  "scripts": {
+    "build": "node build.js"
+  },
   "keywords": [
     "micro",
     "router",
@@ -23,5 +26,11 @@
   "homepage": "https://github.com/Masquerade-Circus/micro-ex-router#readme",
   "jscsConfig": {
     "preset": "crockford"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-preset-env": "^1.6.0",
+    "rollup": "^0.43.0",
+    "rollup-plugin-babel": "^2.7.1"
   }
 }
