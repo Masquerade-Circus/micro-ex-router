@@ -103,7 +103,7 @@ var RouterFactory = function RouterFactory() {
 
                         case 3:
                             if ((_context.t1 = _context.t0()).done) {
-                                _context.next = 13;
+                                _context.next = 15;
                                 break;
                             }
 
@@ -111,24 +111,28 @@ var RouterFactory = function RouterFactory() {
                             matches = urls[i].regexp().exec(req.url);
 
                             if (!Array.isArray(matches)) {
-                                _context.next = 11;
+                                _context.next = 13;
                                 break;
                             }
 
                             matches.shift();
+                            _context.next = 10;
+                            return Router.parseBody(req);
+
+                        case 10:
                             for (k in urls[i].params) {
                                 req.params[urls[i].params[k]] = matches[k];
                             }
                             middleware = urls[i].middleware;
-                            return _context.abrupt('break', 13);
+                            return _context.abrupt('break', 15);
 
-                        case 11:
+                        case 13:
                             _context.next = 3;
                             break;
 
-                        case 13:
+                        case 15:
                             if (!(middleware !== undefined)) {
-                                _context.next = 39;
+                                _context.next = 41;
                                 break;
                             }
 
@@ -138,74 +142,74 @@ var RouterFactory = function RouterFactory() {
 
                             l = Router.useMiddlewares.length, _i = 0;
 
-                        case 16:
+                        case 18:
                             if (!(_i < l)) {
-                                _context.next = 25;
+                                _context.next = 27;
                                 break;
                             }
 
-                            _context.next = 19;
+                            _context.next = 21;
                             return Router.useMiddlewares[_i](req, res);
 
-                        case 19:
+                        case 21:
                             response = _context.sent;
 
                             if (!(response !== undefined || res.headersSent)) {
-                                _context.next = 22;
+                                _context.next = 24;
                                 break;
                             }
 
                             return _context.abrupt('return', response);
 
-                        case 22:
+                        case 24:
                             _i++;
-                            _context.next = 16;
+                            _context.next = 18;
                             break;
 
-                        case 25:
+                        case 27:
                             if (!Array.isArray(middleware)) {
-                                _context.next = 36;
+                                _context.next = 38;
                                 break;
                             }
 
                             _l = middleware.length, _i2 = 0;
                             // call sequentially every middleware
 
-                        case 27:
+                        case 29:
                             if (!(_i2 < _l)) {
-                                _context.next = 36;
+                                _context.next = 38;
                                 break;
                             }
 
-                            _context.next = 30;
+                            _context.next = 32;
                             return middleware[_i2](req, res);
 
-                        case 30:
+                        case 32:
                             response = _context.sent;
 
                             if (!(response !== undefined || res.headersSent)) {
-                                _context.next = 33;
+                                _context.next = 35;
                                 break;
                             }
 
                             return _context.abrupt('return', response);
 
-                        case 33:
+                        case 35:
                             _i2++;
-                            _context.next = 27;
+                            _context.next = 29;
                             break;
 
-                        case 36:
-                            _context.next = 38;
+                        case 38:
+                            _context.next = 40;
                             return middleware(req, res);
 
-                        case 38:
+                        case 40:
                             return _context.abrupt('return', _context.sent);
 
-                        case 39:
+                        case 41:
                             throw new Error('The url ' + req.url + ' requested by ' + req.method.toLowerCase() + ', wasn\'t found');
 
-                        case 40:
+                        case 42:
                         case 'end':
                             return _context.stop();
                     }
@@ -252,8 +256,14 @@ var RouterFactory = function RouterFactory() {
         };
     });
 
-    Router.use(function () {
-        var _ref2 = asyncToGenerator(regeneratorRuntime.mark(function _callee2(req, res) {
+    /**
+     * Parses the body according with its content-type
+     * @method parseBody
+     * @param  {Request}    req
+     * @return {Void}
+     */
+    Router.parseBody = function () {
+        var _ref2 = asyncToGenerator(regeneratorRuntime.mark(function _callee2(req) {
             var type, parsed, _options, body;
 
             return regeneratorRuntime.wrap(function _callee2$(_context2) {
@@ -264,7 +274,7 @@ var RouterFactory = function RouterFactory() {
                              * Set the params property to an empty object
                              * @type {Object}
                              */
-                            req.params = {};
+                            req.params = req.params || {};
 
                             /**
                              * Set the body property to undefined
@@ -367,10 +377,10 @@ var RouterFactory = function RouterFactory() {
             }, _callee2, _this, [[5, 27]]);
         }));
 
-        return function (_x4, _x5) {
+        return function (_x4) {
             return _ref2.apply(this, arguments);
         };
-    }());
+    }();
 
     /**
      * Return the new router

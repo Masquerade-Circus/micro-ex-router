@@ -32,12 +32,16 @@
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.6.0",
+    "compression": "^1.7.0",
+    "express-winston": "^2.4.0",
+    "request": "^2.81.0",
     "rollup": "^0.43.0",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-includepaths": "^0.2.2",
     "rollup-plugin-json": "^2.3.0",
-    "rollup-plugin-node-resolve": "^3.0.0"
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "winston": "^2.3.1"
   },
   "dependencies": {
     "micro": "^7.3.3",
