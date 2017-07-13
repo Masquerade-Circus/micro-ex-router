@@ -1,3 +1,3 @@
-let Router = require(`${__dirname}/dist/index.js`);
+let Router = require(`${__dirname}/lib/index.js`);
 
 module.exports = Router;

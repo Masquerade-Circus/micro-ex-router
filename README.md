@@ -60,6 +60,17 @@ let server = micro(router);
 
 server.listen(3000, () => console.log('Micro listening on port 3000'));
 ```
+
+## Use with Babel
+```javascript
+// index.js
+require('babel-register');
+require('babel-polyfill');
+require('./app');
+
+// app.js
+let Router = require('micro-ex-router/cjs');
+```
 ## Features
 
 - [X] Default returned responses.
