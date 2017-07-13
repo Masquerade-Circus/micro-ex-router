@@ -1,8 +1,8 @@
 let rollup = require('rollup').rollup,
     babel = require('rollup-plugin-babel'),
-    rollupIncludePaths = require('rollup-plugin-includepaths'),
+    // rollupIncludePaths = require('rollup-plugin-includepaths'),
+    // nodeResolve = require('rollup-plugin-node-resolve'),
     json = require('rollup-plugin-json'),
-    nodeResolve = require('rollup-plugin-node-resolve'),
     commonjs = require('rollup-plugin-commonjs'),
     cache;
 
@@ -10,10 +10,10 @@ rollup({
         entry: './lib/index.js',
         cache: cache,
         plugins: [
-            rollupIncludePaths({
-                paths: ['./lib', './node_modules']
-            }),
-            nodeResolve(),
+            // rollupIncludePaths({
+            //     paths: ['./lib', './node_modules']
+            // }),
+            // nodeResolve(),
             commonjs(),
             json(),
             babel()
