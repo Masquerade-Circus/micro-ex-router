@@ -50,21 +50,17 @@ var acceptedMethods = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options
  */
 var addPath = function addPath(router, method, path, middleware) {
     // Find the params like express params
-    var params = path.match(/:(\w+)?/gi);
+    var params = path.match(/:(\w+)?/gi) || [];
 
     // Set the names of the params found
-    if (Array.isArray(params)) {
-        for (var i in params) {
-            params[i] = params[i].replace(':', '');
-        }
+    for (var i in params) {
+        params[i] = params[i].replace(':', '');
     }
 
     // Adds the path to the selected method
     router.paths[method][path] = {
         // RegExp that will be used to match against the requested path
-        regexp: function regexp() {
-            return new RegExp('^' + path.replace(/:(\w+)/gi, "(\\w+)") + '/?(\\?.*)?$', 'gi');
-        },
+        regexp: new RegExp('^' + path.replace(/:(\w+)/gi, '([^\\s\\/]+)') + '/?(\\?.*)?$', 'gi'),
         // The name of the params if any
         params: params,
         // The middleware(s) to call when this path matches
@@ -103,36 +99,40 @@ var RouterFactory = function RouterFactory() {
 
                         case 3:
                             if ((_context.t1 = _context.t0()).done) {
-                                _context.next = 15;
+                                _context.next = 17;
                                 break;
                             }
 
                             i = _context.t1.value;
-                            matches = urls[i].regexp().exec(req.url);
+                            matches = urls[i].regexp.exec(req.url);
+
+                            urls[i].regexp.lastIndex = -1;
 
                             if (!Array.isArray(matches)) {
-                                _context.next = 13;
+                                _context.next = 15;
                                 break;
                             }
 
                             matches.shift();
-                            _context.next = 10;
+                            _context.next = 11;
                             return Router.parseBody(req);
 
-                        case 10:
-                            for (k in urls[i].params) {
+                        case 11:
+                            k = urls[i].params.length;
+
+                            for (; k--;) {
                                 req.params[urls[i].params[k]] = matches[k];
                             }
                             middleware = urls[i].middleware;
-                            return _context.abrupt('break', 15);
+                            return _context.abrupt('break', 17);
 
-                        case 13:
+                        case 15:
                             _context.next = 3;
                             break;
 
-                        case 15:
+                        case 17:
                             if (!(middleware !== undefined)) {
-                                _context.next = 41;
+                                _context.next = 43;
                                 break;
                             }
 
@@ -142,74 +142,74 @@ var RouterFactory = function RouterFactory() {
 
                             l = Router.useMiddlewares.length, _i = 0;
 
-                        case 18:
+                        case 20:
                             if (!(_i < l)) {
-                                _context.next = 27;
+                                _context.next = 29;
                                 break;
                             }
 
-                            _context.next = 21;
+                            _context.next = 23;
                             return Router.useMiddlewares[_i](req, res);
 
-                        case 21:
+                        case 23:
                             response = _context.sent;
 
-                            if (!(response !== undefined || res.headersSent)) {
-                                _context.next = 24;
+                            if (!(response !== undefined && !res.headersSent)) {
+                                _context.next = 26;
                                 break;
                             }
 
                             return _context.abrupt('return', response);
 
-                        case 24:
+                        case 26:
                             _i++;
-                            _context.next = 18;
+                            _context.next = 20;
                             break;
 
-                        case 27:
+                        case 29:
                             if (!Array.isArray(middleware)) {
-                                _context.next = 38;
+                                _context.next = 40;
                                 break;
                             }
 
                             _l = middleware.length, _i2 = 0;
                             // call sequentially every middleware
 
-                        case 29:
+                        case 31:
                             if (!(_i2 < _l)) {
-                                _context.next = 38;
+                                _context.next = 40;
                                 break;
                             }
 
-                            _context.next = 32;
+                            _context.next = 34;
                             return middleware[_i2](req, res);
 
-                        case 32:
+                        case 34:
                             response = _context.sent;
 
-                            if (!(response !== undefined || res.headersSent)) {
-                                _context.next = 35;
+                            if (!(response !== undefined && !res.headersSent)) {
+                                _context.next = 37;
                                 break;
                             }
 
                             return _context.abrupt('return', response);
 
-                        case 35:
+                        case 37:
                             _i2++;
-                            _context.next = 29;
+                            _context.next = 31;
                             break;
 
-                        case 38:
-                            _context.next = 40;
+                        case 40:
+                            _context.next = 42;
                             return middleware(req, res);
 
-                        case 40:
+                        case 42:
                             return _context.abrupt('return', _context.sent);
 
-                        case 41:
+                        case 43:
                             throw new Error('The url ' + req.url + ' requested by ' + req.method.toLowerCase() + ', wasn\'t found');
 
-                        case 42:
+                        case 44:
                         case 'end':
                             return _context.stop();
                     }
