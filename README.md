@@ -12,6 +12,17 @@ $ npm install micro-ex-router
 // With yarn
 $ yarn add micro-ex-router
 ```
+## Features
+
+- [X] Default returned responses.
+- [X] Parametrized routes.
+- [X] Parse body by default
+- [X] Parse query by default
+- [X] "Use" middlewares.
+- [X] "Use" middlewares for each method.
+- [X] Arrays of middlewares.
+- [X] Mix single middlewares and array of middlewares.
+- [X] Use of subrouters.
 
 ## Use
 
@@ -87,6 +98,32 @@ let server = micro(router);
 server.listen(3000, () => console.log('Micro listening on port 3000'));
 ```
 
+## Use of subrouters
+```javascript
+let micro = require('micro');
+let Router = require('micro-ex-router');
+
+// Create a sub router
+let subrouter = Router();
+subrouter
+    .use((req,res) => console.log('Sub router "Use" middleware'))
+    .get('/from/:country', (req,res) => `Hello ${req.params.world} from ${req.params.country}`)
+;
+
+// Create a new router
+let router = Router();
+router
+    .use((req, res) => console.log(`${req.url}`))
+    .use('/hello/:world', subrouter)
+    .use(() => 'Not found')
+;
+
+// Init micro server
+let server = micro(router);
+
+server.listen(3000, async () => console.log('Micro listening on port 3000'));
+```
+
 ## Use with Babel
 ```javascript
 // index.js
@@ -103,16 +140,20 @@ let Router = require('micro-ex-router/cjs');
 let micro = require('micro');
 let Router = require('micro-ex-router');
 let compression = require('compression');
+let cors = require('cors');
 
 // Create a new router
 let router = Router();
 
 router
-    // Add compression middleware
-    .use((req, res) => new Promise(next => compression()(req, res, next)))
+    // Add cors middleware
+    .use((req, res) => new Promise(next => cors()(req, res, next)))
 
     // its the same as
-    // .use((req, res) => new Promise(resolve => compression()(req, res, resolve)))
+    // .use((req, res) => new Promise(resolve => cors()(req, res, resolve)))
+
+    // Add compression middleware
+    .use((req, res) => new Promise(next => compression()(req, res, next)))
 
     .get('/', () => 'Welcome to micro')
 ;
@@ -145,11 +186,8 @@ let loggerOptions = {
 let router = Router();
 
 router
-    // Add compression middleware
+    // Add expressWinston middleware
     .use((req, res) => new Promise(next => expressWinston.logger(loggerOptions)(req, res, next)))
-
-    // its the same as
-    // .use((req, res) => new Promise(resolve => expressWinston.logger(loggerOptions)(req, res, resolve)))
 
     .get('/', () => 'Welcome to micro')
 ;
@@ -159,19 +197,7 @@ let server = micro(router);
 
 server.listen(3000, () => console.log('Micro listening on port 3000'));
 ```
-* Note that not all express plugins will work with this router. Express modify the request object adding more properties that other plugins may use. So, if the plugin use this properties then it will not work with `micro-ex-router`
-
-## Features
-
-- [X] Default returned responses.
-- [X] Parametrized routes.
-- [X] Parse body by default
-- [X] Parse query by default
-- [X] "Use" middlewares.
-- [X] Arrays of middlewares.
-- [X] "Use" middlewares for each method.
-- [X] Mix single middlewares and array of middlewares.
-- [ ] Use of subrouters.
+* Note that not all express plugins will work with this router. Express modify the request object adding more properties that other plugins may use. So, if the plugin use this properties then it will not work with `micro-ex-router`.
 
 ## Available methods
 

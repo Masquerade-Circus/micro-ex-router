@@ -85,32 +85,65 @@ var addPath = function addPath(router, method, args) {
         path = args.shift();
     }
 
+    // If the seccond argument is a function and has paths
+    // and regexpList properties then
+    // Treat it as a subrouter
+    if (typeof args[0] === 'function' && args[0].paths !== undefined && args[0].regexpList !== undefined) {
+        var subrouter = args.shift(),
+            i = 0,
+            l = subrouter.paths.length;
+
+        // For each path of the subrouter
+        for (; i < l; i++) {
+            var submiddlewares = subrouter.paths[i].middlewares;
+            var submethod = subrouter.paths[i].method;
+            var subpath = subrouter.paths[i].path;
+
+            // If there is a path add it as prefix to the subpath
+            if (path !== undefined) {
+                subpath = path + (subpath || '*');
+            }
+
+            // If there are a subpath set it as the first element
+            // on the submiddlewares array
+            if (subpath !== undefined) {
+                submiddlewares.unshift(subpath);
+            }
+
+            // Add the path to the router
+            router = addPath(router, submethod, submiddlewares);
+        }
+    }
+
     // Parse middlwares to handle mixed arrays of middlwares and sequenced middlwares
     middlewares = parseMiddlewares(args);
 
-    // If the path wasn't set before, set the regexp and params list
-    if (path !== undefined && router.regexpList[path] === undefined) {
-        // Find the params like express params
-        var params = path.match(/:(\w+)?/gi) || [];
+    // Add the path only if there are middlewares passed
+    if (middlewares.length > 0) {
+        // If the path wasn't set before, set the regexp and params list
+        if (path !== undefined && router.regexpList[path] === undefined) {
+            // Find the params like express params
+            var params = path.match(/:(\w+)?/gi) || [];
 
-        // Set the names of the params found
-        for (var i in params) {
-            params[i] = params[i].replace(':', '');
+            // Set the names of the params found
+            for (var _i in params) {
+                params[_i] = params[_i].replace(':', '');
+            }
+
+            // Set the object to the path
+            router.regexpList[path] = {
+                regexp: new RegExp('^' + path.replace(/:(\w+)/gi, '([^\\s\\/]+)').replace(/\*/g, '.*') + '/?(\\?.*)?$', 'gi'),
+                params: params
+            };
         }
 
-        // Set the object to the path
-        router.regexpList[path] = {
-            regexp: new RegExp('^' + path.replace(/:(\w+)/gi, '([^\\s\\/]+)').replace(/\*/g, '.*') + '/?(\\?.*)?$', 'gi'),
-            params: params
-        };
+        // Add the path to the paths list
+        router.paths.push({
+            method: method,
+            path: path,
+            middlewares: middlewares
+        });
     }
-
-    // Add the path to the paths list
-    router.paths.push({
-        method: method,
-        path: path,
-        middlewares: middlewares
-    });
 
     return router;
 };
@@ -253,7 +286,7 @@ var RouterFactory = function RouterFactory() {
      */
     var Router = function () {
         var _ref2 = asyncToGenerator(regeneratorRuntime.mark(function _callee2(req, res) {
-            var method, params, middlewares, response, i, l, path, matches, _l, _i, _l2;
+            var method, params, middlewares, response, i, l, path, matches, _l, _i2, _l2;
 
             return regeneratorRuntime.wrap(function _callee2$(_context2) {
                 while (1) {
@@ -318,17 +351,17 @@ var RouterFactory = function RouterFactory() {
                         case 17:
                             req.params = params;
 
-                            _i = 0, _l2 = middlewares.length;
+                            _i2 = 0, _l2 = middlewares.length;
                             // call sequentially every middleware
 
                         case 19:
-                            if (!(_i < _l2)) {
+                            if (!(_i2 < _l2)) {
                                 _context2.next = 28;
                                 break;
                             }
 
                             _context2.next = 22;
-                            return middlewares[_i](req, res);
+                            return middlewares[_i2](req, res);
 
                         case 22:
                             response = _context2.sent;
@@ -341,7 +374,7 @@ var RouterFactory = function RouterFactory() {
                             return _context2.abrupt('break', 28);
 
                         case 25:
-                            _i++;
+                            _i2++;
                             _context2.next = 19;
                             break;
 
