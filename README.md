@@ -23,8 +23,17 @@ let Router = require('micro-ex-router');
 let router = Router();
 
 router
-    // Use middlewares available to all routes
+    // Use middlewares available for all requests
     .use((req, res) => console.log(req.url))
+
+    // Use middlewares available for all requests restricted by each method
+    .get((req, res) => console.log('This is a get request')) // Only for GET requests
+    .post((req, res) => console.log('This is a post request')) // Only for POST requests
+    .put((req, res) => console.log('This is a put request')) // Only for PUT requests
+    .patch((req, res) => console.log('This is a patch request')) // Only for PATCH requests
+    .delete((req, res) => console.log('This is a delete request')) // Only for DELETE requests
+    .head((req, res) => console.log('This is a head request')) // Only for HEAD requests
+    .options((req, res) => console.log('This is an options request')) // Only for OPTIONS requests
 
     // Default returned responses
     .get('/', () => 'Welcome to micro')
@@ -50,9 +59,26 @@ router
     .post('/hello', () => req.body)
 
     // Default parsed query parameters
-    // if you call /hello/with/params?hello=world
+    // if you call /hello/with/query/params?hello=world
     // then req.query = {hello: "world"}
-    .get('/hello/with/params', () => req.query)
+    .get('/hello/with/query/params', () => req.query)
+
+    // Mix single and array of middlewares
+    .get('/mixed',
+        (req, res) => console.log('Middleware 1'),
+        [
+            (req, res) => console.log('Middleware 1.1'),
+            (req, res) => console.log('Middleware 1.2'),
+            [
+                (req, res) => console.log('Middleware 1.2.1'),
+                (req, res) => console.log('Middleware 1.2.2')
+            ]
+        ],
+        (req, res) => console.log('Middleware 2'),
+        (req, res) => 'This is the final response'
+    )
+
+    .use(() => 'Not found')
 ;
 
 // Init micro server
@@ -72,7 +98,7 @@ require('./app');
 let Router = require('micro-ex-router/cjs');
 ```
 
-## Compression and other NodeJs Middlewares
+## Use of Compression, CORS and other NodeJs Middlewares
 ```javascript
 let micro = require('micro');
 let Router = require('micro-ex-router');
@@ -97,7 +123,7 @@ let server = micro(router);
 server.listen(3000, () => console.log('Micro listening on port 3000'));
 ```
 
-## Express plugins
+## Use of Express middlewares
 ```javascript
 let micro = require('micro');
 let Router = require('micro-ex-router');
@@ -143,7 +169,8 @@ server.listen(3000, () => console.log('Micro listening on port 3000'));
 - [X] Parse query by default
 - [X] "Use" middlewares.
 - [X] Arrays of middlewares.
-- [ ] Mix single middlewares and array of middlewares.
+- [X] "Use" middlewares for each method.
+- [X] Mix single middlewares and array of middlewares.
 - [ ] Use of subrouters.
 
 ## Available methods
