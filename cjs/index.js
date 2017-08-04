@@ -38,38 +38,207 @@ var asyncToGenerator = function (fn) {
 
 var _this = undefined;
 
-var acceptedMethods = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options'];
+var acceptedMethods = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'use'];
+
+/**
+ * Handles the mix of single and array of middlewares
+ * @method parseMiddlewares
+ * @param  {Function|Array}         middlewares     // Middleware or array of middlewares
+ * @param  {Array}                  [array=[]]      // The array to store the final list of middlewares
+ * @return {Array}                                  // The final list of middlewares
+ */
+var parseMiddlewares = function parseMiddlewares(middlewares) {
+    var array = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+    if (typeof middlewares === 'function') {
+        array.push(middlewares);
+        return array;
+    }
+
+    var i = 0,
+        l = middlewares.length;
+    for (; i < l; i++) {
+        if (Array.isArray(middlewares[i])) {
+            parseMiddlewares(middlewares[i], array);
+        }
+
+        if (!Array.isArray(middlewares[i])) {
+            array.push(middlewares[i]);
+        }
+    }
+    return array;
+};
 
 /**
  * Adds a path to a router
  * @method addPath
  * @param  {Router} router              The router in which to add the path
  * @param  {String} method              The method that will handle this path
- * @param  {String} path                The path to handle
- * @param  {Function|Array} middleware  Middleware function or an array of middlewares to be called when the path matches
+ * @param  {Array} args                The mixed params (String|Function|Array)
  */
-var addPath = function addPath(router, method, path, middleware) {
-    // Find the params like express params
-    var params = path.match(/:(\w+)?/gi) || [];
+var addPath = function addPath(router, method, args) {
+    var path = void 0,
+        middlewares = void 0;
 
-    // Set the names of the params found
-    for (var i in params) {
-        params[i] = params[i].replace(':', '');
+    // Get the first argument
+    if (typeof args[0] === 'string') {
+        path = args.shift();
     }
 
-    // Adds the path to the selected method
-    router.paths[method][path] = {
-        // RegExp that will be used to match against the requested path
-        regexp: new RegExp('^' + path.replace(/:(\w+)/gi, '([^\\s\\/]+)') + '/?(\\?.*)?$', 'gi'),
-        // The name of the params if any
-        params: params,
-        // The middleware(s) to call when this path matches
-        middleware: middleware
-    };
+    // Parse middlwares to handle mixed arrays of middlwares and sequenced middlwares
+    middlewares = parseMiddlewares(args);
 
-    // return the pased router
+    // If the path wasn't set before, set the regexp and params list
+    if (path !== undefined && router.regexpList[path] === undefined) {
+        // Find the params like express params
+        var params = path.match(/:(\w+)?/gi) || [];
+
+        // Set the names of the params found
+        for (var i in params) {
+            params[i] = params[i].replace(':', '');
+        }
+
+        // Set the object to the path
+        router.regexpList[path] = {
+            regexp: new RegExp('^' + path.replace(/:(\w+)/gi, '([^\\s\\/]+)').replace(/\*/g, '.*') + '/?(\\?.*)?$', 'gi'),
+            params: params
+        };
+    }
+
+    // Add the path to the paths list
+    router.paths.push({
+        method: method,
+        path: path,
+        middlewares: middlewares
+    });
+
     return router;
 };
+
+/**
+ * Parses the body according with its content-type
+ * @method parseBody
+ * @param  {Request}    req
+ * @return {Void}
+ */
+var parseBody = function () {
+    var _ref = asyncToGenerator(regeneratorRuntime.mark(function _callee(req) {
+        var type, parsed, options, body;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+            while (1) {
+                switch (_context.prev = _context.next) {
+                    case 0:
+                        /**
+                         * Set the params property to an empty object
+                         * @type {Object}
+                         */
+                        req.params = req.params || {};
+
+                        /**
+                         * Set the body property to undefined
+                         * @type {Undefined}
+                         */
+                        req.body = undefined;
+
+                        /**
+                         * Set the query object
+                         * The object returned by the querystring.parse() method does not prototypically inherit from the JavaScript Object.
+                         * So we create a new object and merge its properties
+                         * @type {Object}
+                         */
+                        req.query = Object.assign({}, querystring.parse(url.parse(req.url).query));
+
+                        /**
+                         * If the method is other than get try to parse the body
+                         * @method if
+                         * @param  {Request} req
+                         */
+
+                        if (!(req.method.toLowerCase() !== 'get')) {
+                            _context.next = 30;
+                            break;
+                        }
+
+                        type = req.headers['content-type'], parsed = false, options = {
+                            limit: opt.limit,
+                            encoding: opt.encoding
+                        }, body = void 0;
+                        _context.prev = 5;
+
+                        if (!(type === 'application/json')) {
+                            _context.next = 11;
+                            break;
+                        }
+
+                        parsed = true;
+                        _context.next = 10;
+                        return micro.json(req, options);
+
+                    case 10:
+                        body = _context.sent;
+
+                    case 11:
+                        if (!(type === 'application/x-www-form-urlencoded' && !parsed)) {
+                            _context.next = 16;
+                            break;
+                        }
+
+                        parsed = true;
+                        _context.next = 15;
+                        return urlencodedBodyParser(req, options);
+
+                    case 15:
+                        body = _context.sent;
+
+                    case 16:
+                        if (!(type === 'text/html' && !parsed)) {
+                            _context.next = 21;
+                            break;
+                        }
+
+                        parsed = true;
+                        _context.next = 20;
+                        return micro.text(req, options);
+
+                    case 20:
+                        body = _context.sent;
+
+                    case 21:
+                        if (parsed) {
+                            _context.next = 25;
+                            break;
+                        }
+
+                        _context.next = 24;
+                        return micro.buffer(req, options);
+
+                    case 24:
+                        body = _context.sent;
+
+                    case 25:
+                        _context.next = 29;
+                        break;
+
+                    case 27:
+                        _context.prev = 27;
+                        _context.t0 = _context['catch'](5);
+
+                    case 29:
+
+                        req.body = body;
+
+                    case 30:
+                    case 'end':
+                        return _context.stop();
+                }
+            }
+        }, _callee, _this, [[5, 27]]);
+    }));
+
+    return function parseBody(_x2) {
+        return _ref.apply(this, arguments);
+    };
+}();
 
 var RouterFactory = function RouterFactory() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -83,142 +252,125 @@ var RouterFactory = function RouterFactory() {
      * @return {Function}           The async function to be passed to micro
      */
     var Router = function () {
-        var _ref = asyncToGenerator(regeneratorRuntime.mark(function _callee(req, res) {
-            var urls, middleware, i, matches, k, response, l, _i, _l, _i2;
+        var _ref2 = asyncToGenerator(regeneratorRuntime.mark(function _callee2(req, res) {
+            var method, params, middlewares, response, i, l, path, matches, _l, _i, _l2;
 
-            return regeneratorRuntime.wrap(function _callee$(_context) {
+            return regeneratorRuntime.wrap(function _callee2$(_context2) {
                 while (1) {
-                    switch (_context.prev = _context.next) {
+                    switch (_context2.prev = _context2.next) {
                         case 0:
-                            urls = Router.paths[req.method.toLowerCase()];
-                            middleware = void 0;
+                            method = req.method.toLowerCase(), params = {}, middlewares = [], response = void 0, i = 0, l = Router.paths.length;
 
-                            // Find first matched url
-
-                            _context.t0 = regeneratorRuntime.keys(urls);
-
-                        case 3:
-                            if ((_context.t1 = _context.t0()).done) {
-                                _context.next = 17;
+                        case 1:
+                            if (!(i < l)) {
+                                _context2.next = 14;
                                 break;
                             }
 
-                            i = _context.t1.value;
-                            matches = urls[i].regexp.exec(req.url);
+                            path = Router.paths[i];
 
-                            urls[i].regexp.lastIndex = -1;
-
-                            if (!Array.isArray(matches)) {
-                                _context.next = 15;
+                            if (!(method !== path.method && path.method !== 'use')) {
+                                _context2.next = 5;
                                 break;
                             }
 
-                            matches.shift();
-                            _context.next = 11;
-                            return Router.parseBody(req);
+                            return _context2.abrupt('continue', 11);
+
+                        case 5:
+                            if (!((path.method === 'use' || method === path.method) && path.path === undefined)) {
+                                _context2.next = 8;
+                                break;
+                            }
+
+                            middlewares = parseMiddlewares(path.middlewares, middlewares);
+                            return _context2.abrupt('continue', 11);
+
+                        case 8:
+                            matches = Router.regexpList[path.path].regexp.exec(req.url);
+
+                            Router.regexpList[path.path].regexp.lastIndex = -1;
+                            if (Array.isArray(matches)) {
+                                matches.shift();
+                                _l = Router.regexpList[path.path].params.length;
+
+                                for (; _l--;) {
+                                    if (params[Router.regexpList[path.path].params[_l]] === undefined) {
+                                        params[Router.regexpList[path.path].params[_l]] = matches[_l];
+                                    }
+                                }
+                                middlewares = parseMiddlewares(path.middlewares, middlewares);
+                            }
 
                         case 11:
-                            k = urls[i].params.length;
-
-                            for (; k--;) {
-                                req.params[urls[i].params[k]] = matches[k];
-                            }
-                            middleware = urls[i].middleware;
-                            return _context.abrupt('break', 17);
-
-                        case 15:
-                            _context.next = 3;
+                            i++;
+                            _context2.next = 1;
                             break;
+
+                        case 14:
+                            if (!(middlewares.length > 0)) {
+                                _context2.next = 30;
+                                break;
+                            }
+
+                            _context2.next = 17;
+                            return parseBody(req);
 
                         case 17:
-                            if (!(middleware !== undefined)) {
-                                _context.next = 43;
-                                break;
-                            }
+                            req.params = params;
 
-                            response = void 0;
-
-                            // Call the use middlewares
-
-                            l = Router.useMiddlewares.length, _i = 0;
-
-                        case 20:
-                            if (!(_i < l)) {
-                                _context.next = 29;
-                                break;
-                            }
-
-                            _context.next = 23;
-                            return Router.useMiddlewares[_i](req, res);
-
-                        case 23:
-                            response = _context.sent;
-
-                            if (!(response !== undefined && !res.headersSent)) {
-                                _context.next = 26;
-                                break;
-                            }
-
-                            return _context.abrupt('return', response);
-
-                        case 26:
-                            _i++;
-                            _context.next = 20;
-                            break;
-
-                        case 29:
-                            if (!Array.isArray(middleware)) {
-                                _context.next = 40;
-                                break;
-                            }
-
-                            _l = middleware.length, _i2 = 0;
+                            _i = 0, _l2 = middlewares.length;
                             // call sequentially every middleware
 
-                        case 31:
-                            if (!(_i2 < _l)) {
-                                _context.next = 40;
+                        case 19:
+                            if (!(_i < _l2)) {
+                                _context2.next = 28;
                                 break;
                             }
 
-                            _context.next = 34;
-                            return middleware[_i2](req, res);
+                            _context2.next = 22;
+                            return middlewares[_i](req, res);
 
-                        case 34:
-                            response = _context.sent;
+                        case 22:
+                            response = _context2.sent;
 
-                            if (!(response !== undefined && !res.headersSent)) {
-                                _context.next = 37;
+                            if (!(response !== undefined || res.headersSent)) {
+                                _context2.next = 25;
                                 break;
                             }
 
-                            return _context.abrupt('return', response);
+                            return _context2.abrupt('break', 28);
 
-                        case 37:
-                            _i2++;
-                            _context.next = 31;
+                        case 25:
+                            _i++;
+                            _context2.next = 19;
                             break;
 
-                        case 40:
-                            _context.next = 42;
-                            return middleware(req, res);
+                        case 28:
+                            if (!(response !== undefined && !res.headersSent)) {
+                                _context2.next = 30;
+                                break;
+                            }
 
-                        case 42:
-                            return _context.abrupt('return', _context.sent);
+                            return _context2.abrupt('return', response);
 
-                        case 43:
-                            throw new Error('The url ' + req.url + ' requested by ' + req.method.toLowerCase() + ', wasn\'t found');
+                        case 30:
+                            if (res.headersSent) {
+                                _context2.next = 32;
+                                break;
+                            }
 
-                        case 44:
+                            throw new Error('The url ' + req.url + ' requested by ' + method + ', wasn\'t found');
+
+                        case 32:
                         case 'end':
-                            return _context.stop();
+                            return _context2.stop();
                     }
                 }
-            }, _callee, this);
+            }, _callee2, this);
         }));
 
-        return function Router(_x2, _x3) {
-            return _ref.apply(this, arguments);
+        return function Router(_x4, _x5) {
+            return _ref2.apply(this, arguments);
         };
     }();
 
@@ -226,161 +378,27 @@ var RouterFactory = function RouterFactory() {
      * Where to store the paths and its middlewares
      * @type {Object}
      */
-    Router.paths = {};
+    Router.paths = [];
 
     /**
-     * Where to store the use middlewares
-     * @type {Array}
+     * Where to store the regexp and params list for the paths
+     * @type {[type]}
      */
-    Router.useMiddlewares = [];
-
-    /**
-     * Use method to add middlewares for every path
-     * @method use
-     * @param  {Function} middleware    The middleware to add
-     * @return {Router}
-     */
-    Router.use = function (middleware) {
-        Router.useMiddlewares.push(middleware);
-        return Router;
-    };
+    Router.regexpList = {};
 
     /**
      * For each accepted method, add the method to the router
      * @type {Array}
      */
     acceptedMethods.map(function (method) {
-        Router.paths[method] = {};
-        Router[method] = function (path, middleware) {
-            return addPath(Router, method, path, middleware);
+        Router[method] = function () {
+            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+                args[_key] = arguments[_key];
+            }
+
+            return addPath(Router, method, args);
         };
     });
-
-    /**
-     * Parses the body according with its content-type
-     * @method parseBody
-     * @param  {Request}    req
-     * @return {Void}
-     */
-    Router.parseBody = function () {
-        var _ref2 = asyncToGenerator(regeneratorRuntime.mark(function _callee2(req) {
-            var type, parsed, _options, body;
-
-            return regeneratorRuntime.wrap(function _callee2$(_context2) {
-                while (1) {
-                    switch (_context2.prev = _context2.next) {
-                        case 0:
-                            /**
-                             * Set the params property to an empty object
-                             * @type {Object}
-                             */
-                            req.params = req.params || {};
-
-                            /**
-                             * Set the body property to undefined
-                             * @type {Undefined}
-                             */
-                            req.body = undefined;
-
-                            /**
-                             * Set the query object
-                             * The object returned by the querystring.parse() method does not prototypically inherit from the JavaScript Object.
-                             * So we create a new object and merge its properties
-                             * @type {Object}
-                             */
-                            req.query = Object.assign({}, querystring.parse(url.parse(req.url).query));
-
-                            /**
-                             * If the method is other than get try to parse the body
-                             * @method if
-                             * @param  {Request} req
-                             */
-
-                            if (!(req.method.toLowerCase() !== 'get')) {
-                                _context2.next = 30;
-                                break;
-                            }
-
-                            type = req.headers['content-type'], parsed = false, _options = {
-                                limit: opt.limit,
-                                encoding: opt.encoding
-                            }, body = void 0;
-                            _context2.prev = 5;
-
-                            if (!(type === 'application/json')) {
-                                _context2.next = 11;
-                                break;
-                            }
-
-                            parsed = true;
-                            _context2.next = 10;
-                            return micro.json(req, _options);
-
-                        case 10:
-                            body = _context2.sent;
-
-                        case 11:
-                            if (!(type === 'application/x-www-form-urlencoded' && !parsed)) {
-                                _context2.next = 16;
-                                break;
-                            }
-
-                            parsed = true;
-                            _context2.next = 15;
-                            return urlencodedBodyParser(req, _options);
-
-                        case 15:
-                            body = _context2.sent;
-
-                        case 16:
-                            if (!(type === 'text/html' && !parsed)) {
-                                _context2.next = 21;
-                                break;
-                            }
-
-                            parsed = true;
-                            _context2.next = 20;
-                            return micro.text(req, _options);
-
-                        case 20:
-                            body = _context2.sent;
-
-                        case 21:
-                            if (parsed) {
-                                _context2.next = 25;
-                                break;
-                            }
-
-                            _context2.next = 24;
-                            return micro.buffer(req, _options);
-
-                        case 24:
-                            body = _context2.sent;
-
-                        case 25:
-                            _context2.next = 29;
-                            break;
-
-                        case 27:
-                            _context2.prev = 27;
-                            _context2.t0 = _context2['catch'](5);
-
-                        case 29:
-
-                            req.body = body;
-
-                        case 30:
-                        case 'end':
-                            return _context2.stop();
-                    }
-                }
-            }, _callee2, _this, [[5, 27]]);
-        }));
-
-        return function (_x4) {
-            return _ref2.apply(this, arguments);
-        };
-    }();
 
     /**
      * Return the new router
