@@ -130,9 +130,17 @@ var addPath = function addPath(router, method, args) {
                 params[_i] = params[_i].replace(':', '');
             }
 
+            var regexpPath = path
+            // Catch params
+            .replace(/:(\w+)/gi, '([^\\s\\/]+)')
+            // To set to any url with the path as prefix
+            .replace(/\*/g, '.*')
+            // Remove the last slash
+            .replace(/\/(\?.*)?$/gi, '$1');
+
             // Set the object to the path
             router.regexpList[path] = {
-                regexp: new RegExp('^' + path.replace(/:(\w+)/gi, '([^\\s\\/]+)').replace(/\*/g, '.*') + '/?(\\?.*)?$', 'gi'),
+                regexp: new RegExp('^' + regexpPath + '/?(\\?.*)?$', 'gi'),
                 params: params
             };
         }
@@ -155,7 +163,7 @@ var addPath = function addPath(router, method, args) {
  * @return {Void}
  */
 var parseBody = function () {
-    var _ref = asyncToGenerator(regeneratorRuntime.mark(function _callee(req) {
+    var _ref = asyncToGenerator(regeneratorRuntime.mark(function _callee(req, opt) {
         var type, parsed, options, body;
         return regeneratorRuntime.wrap(function _callee$(_context) {
             while (1) {
@@ -268,7 +276,7 @@ var parseBody = function () {
         }, _callee, _this, [[5, 27]]);
     }));
 
-    return function parseBody(_x2) {
+    return function parseBody(_x2, _x3) {
         return _ref.apply(this, arguments);
     };
 }();
@@ -346,7 +354,7 @@ var RouterFactory = function RouterFactory() {
                             }
 
                             _context2.next = 17;
-                            return parseBody(req);
+                            return parseBody(req, opt);
 
                         case 17:
                             req.params = params;
@@ -402,7 +410,7 @@ var RouterFactory = function RouterFactory() {
             }, _callee2, this);
         }));
 
-        return function Router(_x4, _x5) {
+        return function Router(_x5, _x6) {
             return _ref2.apply(this, arguments);
         };
     }();
