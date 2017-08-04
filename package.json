@@ -1,6 +1,6 @@
 {
   "name": "micro-ex-router",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Express style router for micro",
   "main": "index.js",
   "repository": "https://github.com/Masquerade-Circus/micro-ex-router.git",
