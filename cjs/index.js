@@ -122,6 +122,9 @@ var addPath = function addPath(router, method, args) {
     if (middlewares.length > 0) {
         // If the path wasn't set before, set the regexp and params list
         if (path !== undefined && router.regexpList[path] === undefined) {
+            // Remove the last slash
+            path = path.replace(/\/(\?.*)?$/gi, '$1');
+
             // Find the params like express params
             var params = path.match(/:(\w+)?/gi) || [];
 
