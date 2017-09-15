@@ -29,9 +29,15 @@ $ yarn add micro-ex-router
 ```javascript
 let micro = require('micro');
 let Router = require('micro-ex-router');
+let defaultOptions = {
+    parseBody: true, // Tells the router to parse the body by default
+    limit: '1mb', // How much data is aggregated before parsing at max. It can be a Number of bytes or a string like '1mb'.
+    encoding: 'utf8',
+    acceptedMethods: ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'use'] // The methods that will be handled by the router
+};
 
 // Create a new router
-let router = Router();
+let router = Router(defaultOptions);
 
 router
     // Use middlewares available for all requests

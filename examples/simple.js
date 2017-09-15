@@ -1,8 +1,14 @@
 let micro = require('micro');
 let Router = require('../lib');
+let defaultOptions = {
+    parseBody: true, // Tells the router to parse the body by default
+    limit: '1mb', // How much data is aggregated before parsing at max. It can be a Number of bytes or a string like '1mb'.
+    encoding: 'utf8',
+    acceptedMethods: ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'use'] // The methods that will be handled by the router
+};
 
 // Create a new router
-let router = Router();
+let router = Router(defaultOptions);
 
 router
     // Use middlewares available to all routes
@@ -28,7 +34,7 @@ router
     ])
 
     // Default parsed body for all methods other than get
-    // Based on the Content-Type parses json, formurlencoded, text and and buffer
+    // Based on the Content-Type parses json, formurlencoded and text
     .post('/hello', (req,res) => req.body)
 
     // Default parsed query parameters
