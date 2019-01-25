@@ -153,5 +153,19 @@ test('should test files server', async (t) => {
         })
     );
 
+    // Render html with custom headers
+    result = await Server.request('/render/headers');
+    t.is(result.body, '<html><body>Hello world</body></html>');
+    expect(result.res.headers).toEqual(
+        expect.objectContaining({
+            'cache-control': 'public, max-age=2592000',
+            connection: 'close',
+            'content-length': '37',
+            'content-type': 'text/html; charset=utf-8',
+            expires: '0',
+            pragma: 'no-cache'
+        })
+    );
+
     await Server.close(t);
 });

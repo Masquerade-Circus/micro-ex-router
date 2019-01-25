@@ -10,6 +10,10 @@ router
     .get('/file/:file', (req, res) => Router.serveFile(res, `./examples/${req.params.file}`))
     .get('/render/html', Router.render('<html><body>Hello world</body></html>'))
     .get('/render/function', Router.render(() => '<html><body>Hello world</body></html>'))
+    .get('/render/headers', Router.render(() => '<html><body>Hello world</body></html>', {
+        'Cache-Control': 'public, max-age=2592000'
+    }))
+
     .use(() => 'Not found')
 ;
 
