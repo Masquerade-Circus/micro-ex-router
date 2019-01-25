@@ -1,11 +1,12 @@
 {
   "name": "micro-ex-router",
-  "version": "1.5.4",
+  "version": "1.6.0",
   "description": "Express style router for micro",
   "main": "index.js",
   "repository": "https://github.com/Masquerade-Circus/micro-ex-router.git",
   "scripts": {
-    "build": "node build.js"
+    "dev:test": "ava --watch",
+    "test": "ava"
   },
   "keywords": [
     "micro",
@@ -24,28 +25,27 @@
     "url": "https://github.com/Masquerade-Circus/micro-ex-router/issues"
   },
   "homepage": "https://github.com/Masquerade-Circus/micro-ex-router#readme",
-  "jscsConfig": {
-    "preset": "crockford",
-    "disallowKeywords": false
-  },
   "devDependencies": {
-    "babel-plugin-external-helpers": "^6.22.0",
-    "babel-plugin-transform-async-to-generator": "^6.24.1",
-    "babel-polyfill": "^6.23.0",
-    "babel-preset-env": "^1.6.0",
-    "compression": "^1.7.0",
-    "express-winston": "^2.4.0",
-    "request": "^2.81.0",
-    "rollup": "^0.43.0",
-    "rollup-plugin-babel": "^2.7.1",
-    "rollup-plugin-commonjs": "^8.0.2",
-    "rollup-plugin-includepaths": "^0.2.2",
-    "rollup-plugin-json": "^2.3.0",
-    "rollup-plugin-node-resolve": "^3.0.0",
-    "winston": "^2.3.1"
+    "ava": "^1.1.0",
+    "compression": "^1.7.3",
+    "expect": "^23.6.0",
+    "express-winston": "^3.0.1",
+    "puppeteer": "^1.11.0",
+    "request": "^2.88.0",
+    "winston": "^3.1.0"
   },
   "dependencies": {
-    "micro": "^7.3.3",
+    "micro": "^9.3.3",
+    "recursive-readdir": "^2.2.2",
     "urlencoded-body-parser": "^2.0.1"
+  },
+  "ava": {
+    "files": [
+      "tests/**/*_test.js"
+    ],
+    "sources": [
+      "**/*.{js,jsx}"
+    ],
+    "failWithoutAssertions": false
   }
 }

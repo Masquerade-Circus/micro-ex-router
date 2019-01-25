@@ -35,40 +35,15 @@ router
 
     // Default parsed body for all methods other than get
     // Based on the Content-Type parses json, formurlencoded and text
-    .post('/hello', (req,res) => req.body)
+    .post('/hello', (req, res) => req.body)
 
     // Default parsed query parameters
     // if you call /hello/with/params?hello=world
     // then req.query = {hello: "world"}
-    .get('/hello/with/params', (req,res) => req.query)
+    .get('/hello/with/params', (req, res) => req.query)
 ;
 
 // Init micro server
 let server = micro(router);
-
-server.listen(3000, async () => {
-    console.log('Micro listening on port 3000');
-
-    /**
-     * Load the selfRequest function to test the server paths
-     * @type {Function}
-     */
-    let selfRequest = require('../helpers/self_request');
-
-    // Do a request to test every route
-    try {
-        await selfRequest('/');
-        await selfRequest('/hello/mike');
-        await selfRequest('/hello/mike/whats/up');
-        await selfRequest('/hello/mike');
-        await selfRequest('/hello', 'post', {hello: 'world'});
-        await selfRequest('/hello/with/params?hello=world');
-    } catch (e) {
-        console.error(e);
-        process.exit(1);
-    } finally {
-        console.log('Done');
-        process.exit();
-    }
-
-});
+// server.listen(3000, () => console.log('Micro listening on port 3000'));
+module.exports = server;

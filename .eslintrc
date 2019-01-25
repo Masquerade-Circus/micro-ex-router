@@ -1,0 +1,43 @@
+{
+  "extends": "crockford",
+  "rules": {
+    "semi": [
+      2,
+      "always"
+    ],
+    "indent": [
+      2,
+      4,
+      {
+        "SwitchCase": 1
+      }
+    ],
+    "valid-jsdoc": 2,
+    "new-cap":"off",
+    "no-var":"error",
+    "no-undef":0,
+    "eqeqeq":"off",
+    "no-multi-spaces":"error",
+    "no-multiple-empty-lines":"error",
+    "one-var":"off",
+    "no-continue":"off",
+    "no-new-func":"warn",
+    "no-plusplus":"off",
+    "no-console":"warn"
+  },
+  "env": {
+    "shared-node-browser": true,
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 9,
+    "sourceType": "module",
+    "ecmaFeatures": {
+        "jsx": true,
+        "modules": true,
+        "experimentalObjectRestSpread": true
+    }
+  }
+}

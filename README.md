@@ -23,6 +23,8 @@ $ yarn add micro-ex-router
 - [X] Arrays of middlewares.
 - [X] Mix single middlewares and array of middlewares.
 - [X] Use of subrouters.
+- [X] Serve files directory
+- [X] Render string as html
 
 ## Use
 
@@ -130,17 +132,6 @@ let server = micro(router);
 server.listen(3000, async () => console.log('Micro listening on port 3000'));
 ```
 
-## Use with Babel
-```javascript
-// index.js
-require('babel-register');
-require('babel-polyfill');
-require('./app');
-
-// app.js
-let Router = require('micro-ex-router/cjs');
-```
-
 ## Use of Compression, CORS and other NodeJs Middlewares
 ```javascript
 let micro = require('micro');
@@ -205,6 +196,32 @@ server.listen(3000, () => console.log('Micro listening on port 3000'));
 ```
 * Note that not all express plugins will work with this router. Express modify the request object adding more properties that other plugins may use. So, if the plugin use this properties then it will not work with `micro-ex-router`.
 
+## Serve files from a directory and render a string as html
+```javascript
+let micro = require('micro');
+let Router = require('micro-ex-router');
+
+// Create a new router
+let router = Router();
+
+router
+    // Serve files from a directory
+    .use(Router.serveDir('./public'))
+    // Serve a single file
+    .get('/file/:file', (req, res) => Router.serveFile(res, `./public/${req.params.file}`))
+    // Serve a string as html
+    .get('/render/html', Router.render('<html><body>Hello world</body></html>'))
+    // Serve a string as html returned by a function
+    .get('/render/function', Router.render(() => '<html><body>Hello world</body></html>'))
+    .use(() => 'Not found')
+;
+
+// Init micro server
+let server = micro(router);
+
+server.listen(3000, () => console.log('Micro listening on port 3000'));
+```
+
 ## Available methods
 
 - Get
@@ -224,6 +241,16 @@ Based on the Content-Type header, the router will try to parse the body.
 - If other type than the previous ones parse the body as buffer
 
 If it receive query params, these params will be parsed and will be available on the `req.query` property
+
+## Tests
+
+`npm test`
+
+## Contributing
+
+- Use prettify and eslint to lint your code.
+- Add tests for any new or changed functionality.
+- Update the readme with an example if you add or change any functionality.
 
 ## Legal
 
