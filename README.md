@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Masquerade-Circus/micro-ex-router.svg?branch=master)](https://travis-ci.org/Masquerade-Circus/micro-ex-router)
+
 # micro-ex-router
 
 Express style router for zeit's [micro](https://github.com/zeit/micro).

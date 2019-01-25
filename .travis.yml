@@ -4,7 +4,7 @@ node_js:
   - stable
 
 install:
-  - npm install
+  - yarn
 
 script:
-  - npm test
+  - yarn test
