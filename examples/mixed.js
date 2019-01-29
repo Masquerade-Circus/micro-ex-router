@@ -5,23 +5,23 @@ let Router = require('../lib');
 let router = Router();
 
 router
-    .use((req, res) => console.log(`${req.url}`))
-    // Mix of single middlewares and array of middlewares
-    .get('/url/:url',
-        (req, res) => console.log('Middleware 1'),
-        [
-            (req, res) => console.log('Middleware 1.1'),
-            (req, res) => console.log('Middleware 1.2'),
-            [
-                (req, res) => console.log('Middleware 1.2.1'),
-                (req, res) => console.log('Middleware 1.2.2')
-            ]
-        ],
-        (req, res) => console.log('Middleware 2'),
-        (req, res) => 'This is the final response'
-    )
-    .use(() => 'Not found')
-;
+  .use((req, res) => console.log(`${req.url}`))
+  // Mix of single middlewares and array of middlewares
+  .get(
+    '/url/:url',
+    (req, res) => console.log('Middleware 1'),
+    [
+      (req, res) => console.log('Middleware 1.1'),
+      (req, res) => console.log('Middleware 1.2'),
+      [
+        (req, res) => console.log('Middleware 1.2.1'),
+        (req, res) => console.log('Middleware 1.2.2')
+      ]
+    ],
+    (req, res) => console.log('Middleware 2'),
+    (req, res) => 'This is the final response'
+  )
+  .use(() => 'Not found');
 
 // Init micro server
 let server = micro(router);

@@ -7,23 +7,26 @@ let Router = require('../lib');
 let transports = require('winston').transports;
 let expressWinston = require('express-winston');
 let loggerOptions = {
-    transports: [new transports.Console({ colorize: true })],
-    meta: false,
-    msg: "{{res.statusCode}} {{req.method}} {{req.url}} {{res.responseTime}}ms", // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
-    colorStatus: true
+  transports: [new transports.Console({ colorize: true })],
+  meta: false,
+  msg: '{{res.statusCode}} {{req.method}} {{req.url}} {{res.responseTime}}ms', // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
+  colorStatus: true
 };
-
 
 // Create a new router
 let router = Router();
 
 router
-    // Add compression middleware
-    .use((req, res) => new Promise(next => expressWinston.logger(loggerOptions)(req, res, next)))
-    // its the same as
-    // .use((req, res) => new Promise(resolve => expressWinston.logger(loggerOptions)(req, res, resolve)))
-    .get('/', () => 'Welcome to micro')
-;
+  // Add compression middleware
+  .use(
+    (req, res) =>
+      new Promise((next) =>
+        expressWinston.logger(loggerOptions)(req, res, next)
+      )
+  )
+  // its the same as
+  // .use((req, res) => new Promise(resolve => expressWinston.logger(loggerOptions)(req, res, resolve)))
+  .get('/', () => 'Welcome to micro');
 
 // Init micro server
 let server = micro(router);

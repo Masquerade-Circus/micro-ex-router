@@ -6,12 +6,11 @@ let compression = require('compression');
 let router = Router();
 
 router
-    // Add compression middleware
-    .use((req, res) => new Promise(next => compression()(req, res, next)))
-    // its the same as
-    // .use((req, res) => new Promise(resolve => compression()(req, res, resolve)))
-    .get('/', () => 'Welcome to micro')
-;
+  // Add compression middleware
+  .use((req, res) => new Promise((next) => compression()(req, res, next)))
+  // its the same as
+  // .use((req, res) => new Promise(resolve => compression()(req, res, resolve)))
+  .get('/', () => 'Welcome to micro');
 
 // Init micro server
 let server = micro(router);
