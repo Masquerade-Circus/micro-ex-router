@@ -6,14 +6,17 @@
   "repository": "https://github.com/Masquerade-Circus/micro-ex-router.git",
   "scripts": {
     "dev:test": "ava --watch",
-    "test": "ava"
+    "test": "nyc ava",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "keywords": [
     "micro",
     "router",
     "express",
     "middleware",
-    "micro-service"
+    "micro-service",
+    "framework",
+    "server"
   ],
   "author": {
     "name": "Masquerade Circus",
@@ -28,9 +31,10 @@
   "devDependencies": {
     "ava": "^1.1.0",
     "compression": "^1.7.3",
+    "coveralls": "^3.0.2",
     "expect": "^23.6.0",
     "express-winston": "^3.0.1",
-    "puppeteer": "^1.11.0",
+    "nyc": "^13.1.0",
     "request": "^2.88.0",
     "winston": "^3.1.0"
   },
@@ -47,5 +51,11 @@
       "**/*.{js,jsx}"
     ],
     "failWithoutAssertions": false
+  },
+  "nyc": {
+    "exclude": [
+      "tests",
+      "examples"
+    ]
   }
 }
