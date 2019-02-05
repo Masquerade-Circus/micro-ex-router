@@ -1,4 +1,4 @@
-[![npm version](https://img.shields.io/npm/v/micro-ex-router.svg?style=flat)](https://npmjs.org/package/micro-ex-router 'View this project on npm')
+[![npm version](https://img.shields.io/npm/v/micro-ex-router.svg?style=flat)](https://npmjs.org/package/micro-ex-router "View this project on npm")
 [![Build Status](https://travis-ci.org/Masquerade-Circus/micro-ex-router.svg?branch=master)](https://travis-ci.org/Masquerade-Circus/micro-ex-router)
 [![Dependencies](https://img.shields.io/david/masquerade-circus/micro-ex-router.svg?style=flat)](https://david-dm.org/masquerade-circus/micro-ex-router)
 ![](https://img.shields.io/github/issues/masquerade-circus/micro-ex-router.svg)
@@ -11,6 +11,21 @@
 # micro-ex-router
 
 Express style router for zeit's [micro](https://github.com/zeit/micro).
+
+## Table of Contents
+
+-   [Install](#install)
+-   [Features](#features)
+-   [Use](#use)
+-   [Use of subrouters](#use-of-subrouters)
+-   [Use of Compression, CORS and other NodeJs Middlewares](#use-of-compression-cors-and-other-nodejs-middlewares)
+-   [Use of Express middlewares](#use-of-express-middlewares)
+-   [Serve files from a directory and render a string as html](#serve-files-from-a-directory-and-render-a-string-as-html)
+-   [Available methods](#available-methods)
+-   [Parsed body and query by default](#parsed-body-and-query-by-default)
+-   [Tests](#tests)
+-   [Contributing](#contributing)
+-   [Legal](#legal)
 
 ## Install
 
@@ -25,17 +40,17 @@ $ yarn add micro-ex-router
 
 ## Features
 
-- [x] Default returned responses.
-- [x] Parametrized routes.
-- [x] Parse body by default
-- [x] Parse query by default
-- [x] "Use" middlewares.
-- [x] "Use" middlewares for each method.
-- [x] Arrays of middlewares.
-- [x] Mix single middlewares and array of middlewares.
-- [x] Use of subrouters.
-- [x] Serve files directory
-- [x] Render string as html
+-   [x] Default returned responses.
+-   [x] Parametrized routes.
+-   [x] Parse body by default
+-   [x] Parse query by default
+-   [x] "Use" middlewares.
+-   [x] "Use" middlewares for each method.
+-   [x] Arrays of middlewares.
+-   [x] Mix single middlewares and array of middlewares.
+-   [x] Use of subrouters.
+-   [x] Serve files directory
+-   [x] Render string as html
 
 ## Use
 
@@ -225,7 +240,7 @@ let server = micro(router);
 server.listen(3000, () => console.log('Micro listening on port 3000'));
 ```
 
-- Note that not all express plugins will work with this router. Express modify the request object adding more properties that other plugins may use. So, if the plugin use this properties then it will not work with `micro-ex-router`.
+-   Note that not all express plugins will work with this router. Express modify the request object adding more properties that other plugins may use. So, if the plugin use this properties then it will not work with `micro-ex-router`.
 
 ## Serve files from a directory and render a string as html
 
@@ -271,22 +286,22 @@ server.listen(3000, () => console.log('Micro listening on port 3000'));
 
 ## Available methods
 
-- Get
-- Post
-- Put
-- Patch
-- Delete
-- Head
-- Options
+-   Get
+-   Post
+-   Put
+-   Patch
+-   Delete
+-   Head
+-   Options
 
 ## Parsed body and query by default
 
 Based on the Content-Type header, the router will try to parse the body.
 
-- If type === 'application/json' then parse the body as json
-- If type === 'application/x-www-form-urlencoded' then parse the body as form urlencoded
-- If type === 'text/html' then parse the body as text
-- If other type than the previous ones parse the body as buffer
+-   If type === 'application/json' then parse the body as json
+-   If type === 'application/x-www-form-urlencoded' then parse the body as form urlencoded
+-   If type === 'text/html' then parse the body as text
+-   If other type than the previous ones parse the body as buffer
 
 If it receive query params, these params will be parsed and will be available on the `req.query` property
 
@@ -296,9 +311,9 @@ If it receive query params, these params will be parsed and will be available on
 
 ## Contributing
 
-- Use prettify and eslint to lint your code.
-- Add tests for any new or changed functionality.
-- Update the readme with an example if you add or change any functionality.
+-   Use prettify and eslint to lint your code.
+-   Add tests for any new or changed functionality.
+-   Update the readme with an example if you add or change any functionality.
 
 ## Legal
 
