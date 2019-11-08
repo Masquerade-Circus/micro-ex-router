@@ -30,22 +30,22 @@
   },
   "homepage": "https://github.com/Masquerade-Circus/micro-ex-router#readme",
   "devDependencies": {
-    "ava": "^1.1.0",
-    "compression": "^1.7.3",
-    "coveralls": "^3.0.2",
-    "eslint-plugin-sonarjs": "^0.2.0",
-    "expect": "^23.6.0",
-    "express-winston": "^3.0.1",
-    "nyc": "^13.1.0",
-    "remark-cli": "^6.0.1",
-    "remark-toc": "^5.1.1",
+    "ava": "^2.4.0",
+    "compression": "^1.7.4",
+    "coveralls": "^3.0.7",
+    "eslint-plugin-sonarjs": "^0.5.0",
+    "expect": "^24.9.0",
+    "express-winston": "^4.0.1",
+    "nyc": "^14.1.1",
+    "remark-cli": "^7.0.0",
+    "remark-toc": "^6.0.0",
     "request": "^2.88.0",
-    "winston": "^3.1.0"
+    "winston": "^3.2.1"
   },
   "dependencies": {
-    "micro": "^9.3.3",
+    "micro": "^9.3.4",
     "recursive-readdir": "^2.2.2",
-    "urlencoded-body-parser": "^2.0.1"
+    "urlencoded-body-parser": "^3.0.0"
   },
   "ava": {
     "files": [
