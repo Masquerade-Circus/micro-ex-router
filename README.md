@@ -252,17 +252,29 @@ let Router = require('micro-ex-router');
 let router = Router();
 
 // To render with this headers
-let withHeaders = {
+let htmlWithHeaders = {
   'Cache-Control': 'public, max-age=2592000',
   Expires: new Date(Date.now() + 604800000).toUTCString()
 };
 
+let defaultHeaders = {
+  any: {
+    'Cache-Control': 'no-cache'
+  },
+  css: {
+    'Cache-Control': 'public, max-age=2592000',
+    Expires: new Date(Date.now() + 604800000).toUTCString()
+  }
+};
+
+let refreshFileListTime = 1000 * 60 * 60; // 60 minutes
+
 router
   // Serve files from a directory
-  .use(Router.serveDir('./public'))
+  .use(Router.serveDir('./public', defaultHeaders, refreshFileListTime))
   // Serve a single file
   .get('/file/:file', (req, res) =>
-    Router.serveFile(res, `./public/${req.params.file}`)
+    Router.serveFile(res, `./public/${req.params.file}`, defaultHeaders)
   )
   // Serve a string as html
   .get('/render/html', Router.render('<html><body>Hello world</body></html>'))
@@ -274,7 +286,7 @@ router
   // Serve a string as html with custom headers
   .get(
     '/render/function',
-    Router.render(() => '<html><body>Hello world</body></html>', withHeaders)
+    Router.render(() => '<html><body>Hello world</body></html>', htmlWithHeaders)
   )
   .use(() => 'Not found');
 

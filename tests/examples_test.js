@@ -1,13 +1,13 @@
-import test from 'ava';
-import expect from 'expect';
-import ServerHelper from './helpers/server';
-import CompressionExample from '../examples/compression';
-import ExpressPluginsExample from '../examples/express-plugins';
-import MixedExample from '../examples/mixed';
-import SimpleExample from '../examples/simple';
-import SubRoutersExample from '../examples/sub-router';
-import UseMiddlewaresExample from '../examples/use-middlewares';
-import ServeFilesExample from '../examples/serve-files';
+const test = require('ava');
+const expect = require('expect');
+const ServerHelper = require('./helpers/server');
+const CompressionExample = require('../examples/compression');
+const ExpressPluginsExample = require('../examples/express-plugins');
+const MixedExample = require('../examples/mixed');
+const SimpleExample = require('../examples/simple');
+const SubRoutersExample = require('../examples/sub-router');
+const UseMiddlewaresExample = require('../examples/use-middlewares');
+const ServeFilesExample = require('../examples/serve-files');
 
 test('should test nodejs plugins', async (t) => {
   let Server = ServerHelper(CompressionExample);
